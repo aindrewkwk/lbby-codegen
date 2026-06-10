@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lbby — Activation Code Generator</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --accent-hover: #79c0ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --radius: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* ── Password Gate ─────────────────────────────────── */
+
+  #gate {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+  }
+
+  #gate h1 { font-size: 1.4em; margin-bottom: 8px; }
+  #gate p { color: var(--muted); margin-bottom: 24px; font-size: 0.9em; }
+
+  #gate input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 10px 14px;
+    width: 100%;
+    font-size: 1em;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  #gate input:focus { outline: none; border-color: var(--accent); }
+
+  #gate-error { color: var(--red); font-size: 0.85em; min-height: 1.2em; }
+
+  /* ── Main App ──────────────────────────────────────── */
+
+  #app { display: none; }
+
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .header h1 { font-size: 1.3em; }
+  .header p { color: var(--muted); font-size: 0.85em; margin-top: 4px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85em;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  input, select, textarea {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    padding: 8px 12px;
+    width: 100%;
+    font-size: 0.9em;
+    font-family: inherit;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  textarea { resize: vertical; min-height: 100px; font-family: monospace; font-size: 0.8em; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .field { margin-bottom: 12px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .hint {
+    font-size: 0.75em;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  /* ── Buttons ───────────────────────────────────────── */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: var(--radius);
+    font-size: 0.9em;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #000;
+    width: 100%;
+  }
+
+  .btn-primary:hover { background: var(--accent-hover); }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--text);
+  }
+
+  .btn-secondary:hover { border-color: var(--muted); }
+
+  .btn-small {
+    padding: 6px 12px;
+    font-size: 0.8em;
+  }
+
+  /* ── Output ────────────────────────────────────────── */
+
+  #output-section { display: none; }
+
+  .code-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    font-family: monospace;
+    font-size: 0.75em;
+    word-break: break-all;
+    line-height: 1.5;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .code-box .copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 3px 8px;
+    font-size: 0.85em;
+  }
+
+  .code-box .copy-btn:hover { color: var(--text); border-color: var(--muted); }
+
+  .code-meta {
+    font-size: 0.8em;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .code-meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 500;
+  }
+
+  .badge-master { background: #388bfd22; color: var(--accent); }
+  .badge-novice { background: #3fb95022; color: var(--green); }
+  .badge-unbound { background: #8b949e22; color: var(--muted); }
+  .badge-bound { background: #f8514922; color: var(--red); }
+
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--green);
+    color: #000;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    font-size: 0.85em;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+  }
+
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ── Password Gate ────────────────────────────── -->
+  <div id="gate">
+    <h1>🔑 Lbby Code Generator</h1>
+    <p>Enter the access password to continue</p>
+    <input type="password" id="gate-input" placeholder="Password" autofocus>
+    <div id="gate-error"></div>
+    <br>
+    <button class="btn btn-primary" onclick="checkPassword()" style="width:auto;padding:8px 32px">Enter</button>
+  </div>
+
+  <!-- ── Main App ─────────────────────────────────── -->
+  <div id="app">
+
+    <div class="header">
+      <h1>🔑 Lbby Activation Code Generator</h1>
+      <p>Generate Ed25519-signed license codes for the Lbby desktop app</p>
+    </div>
+
+    <!-- Private Key -->
+    <div class="card">
+      <div class="card-title">Private Key</div>
+      <div class="field">
+        <textarea id="pem-key" placeholder="-----BEGIN PRIVATE KEY-----&#10;...&#10;-----END PRIVATE KEY-----"></textarea>
+        <div class="hint">PEM-encoded Ed25519 private key. Never stored — cleared when you close the page.</div>
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div class="card">
+      <div class="card-title">Code Settings</div>
+
+      <div class="row">
+        <div class="field">
+          <label for="tier">Tier</label>
+          <select id="tier">
+            <option value="master">Master</option>
+            <option value="novice">Novice</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="expiry">Expiry</label>
+          <select id="expiry">
+            <option value="30">30 days</option>
+            <option value="90">90 days</option>
+            <option value="365">1 year</option>
+            <option value="lifetime">Lifetime (10yr)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="device">Device Fingerprint <span style="color:var(--muted)">(optional)</span></label>
+        <input type="text" id="device" placeholder="32-char hex SHA-256 hash — leave blank for any device" maxlength="32" spellcheck="false">
+      </div>
+
+      <div class="row-3">
+        <div class="field">
+          <label for="user-id">User ID</label>
+          <input type="text" id="user-id" placeholder="auto">
+        </div>
+        <div class="field">
+          <label for="email">Email label</label>
+          <input type="text" id="email" placeholder="optional">
+        </div>
+        <div class="field">
+          <label for="count">Count</label>
+          <input type="number" id="count" value="1" min="1" max="100">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="generate()">Generate Code</button>
+
+    <!-- Output -->
+    <div id="output-section">
+      <div class="card" style="margin-top:16px">
+        <div class="card-title">Generated Codes</div>
+        <div id="codes-output"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied!</div>
+
+<script>
+// ── Password Gate ─────────────────────────────────────────────────────────────
+// Change this to whatever password you want.
+const SITE_PASSWORD = "lbby2026";
+
+function checkPassword() {
+  const input = document.getElementById("gate-input").value;
+  if (input === SITE_PASSWORD) {
+    document.getElementById("gate").style.display = "none";
+    document.getElementById("app").style.display = "block";
+    sessionStorage.setItem("lbby-authed", "1");
+  } else {
+    document.getElementById("gate-error").textContent = "Wrong password";
+    document.getElementById("gate-input").value = "";
+    document.getElementById("gate-input").focus();
+  }
+}
+
+// Auto-login if already authed this session
+if (sessionStorage.getItem("lbby-authed") === "1") {
+  document.getElementById("gate").style.display = "none";
+  document.getElementById("app").style.display = "block";
+}
+
+// Enter key on password field
+document.getElementById("gate-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") checkPassword();
+});
+
+// ── Crypto ────────────────────────────────────────────────────────────────────
+
+function b64url(input) {
+  let bytes;
+  if (typeof input === "string") bytes = new TextEncoder().encode(input);
+  else if (input instanceof ArrayBuffer) bytes = new Uint8Array(input);
+  else bytes = input;
+  let str = "";
+  for (const b of bytes) str += String.fromCharCode(b);
+  return btoa(str).replace(/=/g, "").replace(/\+/g, "-").replace(/\//g, "_");
+}
+
+function pemToPkcs8(pem) {
+  const stripped = pem
+    .replace(/-----BEGIN [^-]+-----/, "")
+    .replace(/-----END [^-]+-----/, "")
+    .replace(/\s+/g, "");
+  const bin = atob(stripped);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out.buffer;
+}
+
+async function importPrivateKey(pem) {
+  return crypto.subtle.importKey(
+    "pkcs8",
+    pemToPkcs8(pem),
+    { name: "Ed25519" },
+    false,
+    ["sign"],
+  );
+}
+
+async function signJwt(key, claims) {
+  const header = { alg: "EdDSA", typ: "JWT" };
+  const signingInput = `${b64url(JSON.stringify(header))}.${b64url(JSON.stringify(claims))}`;
+  const sig = await crypto.subtle.sign(
+    { name: "Ed25519" },
+    key,
+    new TextEncoder().encode(signingInput),
+  );
+  return `${signingInput}.${b64url(sig)}`;
+}
+
+// ── Generate ──────────────────────────────────────────────────────────────────
+
+async function generate() {
+  const pemInput = document.getElementById("pem-key").value.trim();
+  if (!pemInput || !pemInput.includes("BEGIN")) {
+    alert("Paste your Ed25519 private key (PEM format) first.");
+    return;
+  }
+
+  const tier = document.getElementById("tier").value;
+  const expiryVal = document.getElementById("expiry").value;
+  const device = document.getElementById("device").value.trim().toLowerCase();
+  const userId = document.getElementById("user-id").value.trim() || null;
+  const email = document.getElementById("email").value.trim() || null;
+  const count = Math.min(100, Math.max(1, parseInt(document.getElementById("count").value) || 1));
+
+  if (device && !/^[a-f0-9]{32}$/.test(device)) {
+    alert("Device fingerprint must be exactly 32 hex characters.");
+    return;
+  }
+
+  let key;
+  try {
+    key = await importPrivateKey(pemInput);
+  } catch (e) {
+    alert("Failed to import private key. Make sure it's a valid Ed25519 PEM.\n\n" + e.message);
+    return;
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const days = expiryVal === "lifetime" ? 365 * 10 : parseInt(expiryVal);
+  const exp = now + days * 86_400;
+  const expDate = new Date(exp * 1000).toISOString().slice(0, 10);
+
+  const codes = [];
+  for (let i = 0; i < count; i++) {
+    const sub = userId ?? `codegen-${now}-${i}`;
+    const claims = {
+      iss: "lbby",
+      sub: String(sub),
+      tier,
+      iat: now,
+      exp,
+      jti: `${sub}-${now}-${i}`,
+    };
+    if (device) claims.dev = device;
+    if (email) claims.email = email;
+
+    const jwt = await signJwt(key, claims);
+    codes.push({ jwt, tier, expDate, device: device || null });
+  }
+
+  renderCodes(codes);
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+
+function renderCodes(codes) {
+  const section = document.getElementById("output-section");
+  const container = document.getElementById("codes-output");
+  section.style.display = "block";
+  container.innerHTML = "";
+
+  for (let i = 0; i < codes.length; i++) {
+    const c = codes[i];
+    const tierBadge = c.tier === "master"
+      ? '<span class="badge badge-master">Master</span>'
+      : '<span class="badge badge-novice">Novice</span>';
+    const devBadge = c.device
+      ? `<span class="badge badge-bound">bound: ${c.device.slice(0, 8)}…</span>`
+      : '<span class="badge badge-unbound">unbound (any device)</span>';
+
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <div class="code-meta">
+        ${tierBadge}
+        ${devBadge}
+        <span>📅 ${c.expDate}</span>
+      </div>
+      <div class="code-box">
+        <button class="copy-btn" onclick="copyCode(this, '${c.jwt}')">Copy</button>
+        ${c.jwt}
+      </div>
+    `;
+    container.appendChild(div);
+  }
+
+  if (codes.length > 1) {
+    const allBtn = document.createElement("div");
+    allBtn.className = "actions";
+    allBtn.innerHTML = `
+      <button class="btn btn-secondary btn-small" onclick="copyAll()">📋 Copy All</button>
+    `;
+    container.appendChild(allBtn);
+  }
+
+  section.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function copyCode(btn, text) {
+  navigator.clipboard.writeText(text).then(() => showToast(btn, "Copied!"));
+}
+
+function copyAll() {
+  const boxes = document.querySelectorAll(".code-box");
+  const all = Array.from(boxes).map(b => b.textContent.replace("Copy", "").trim()).join("\n");
+  navigator.clipboard.writeText(all).then(() => showToast(null, "All codes copied!"));
+}
+
+function showToast(anchor, msg) {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 1500);
+}
+</script>
+
+</body>
+</html>
