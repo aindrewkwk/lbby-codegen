@@ -351,15 +351,27 @@
 
 <script>
 // ── Password Gate ─────────────────────────────────────────────────────────────
-// Change this to whatever password you want.
-const SITE_PASSWORD = "lbby2026";
+// SECURITY: Password is verified via SHA-256 hash comparison.
+// The plaintext password is NEVER stored in source code.
+// To change the password: hash the new password with SHA-256 and update the hash below.
+// Generate hash: echo -n "yourpassword" | shasum -a 256
+const PASSWORD_HASH = "f4a95c71c17d267823a4671998249ead5b4c0f6c6ed79daf85381e3fe14de2ba";
 
-function checkPassword() {
+async function checkPassword() {
   const input = document.getElementById("gate-input").value;
-  if (input === SITE_PASSWORD) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(input);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+
+  if (hashHex === PASSWORD_HASH) {
+    // Use a time-limited token instead of a simple flag
+    const token = crypto.randomUUID();
+    const expiry = Date.now() + 3600000; // 1 hour
+    sessionStorage.setItem("lbby-authed", JSON.stringify({ token, expiry }));
     document.getElementById("gate").style.display = "none";
     document.getElementById("app").style.display = "block";
-    sessionStorage.setItem("lbby-authed", "1");
   } else {
     document.getElementById("gate-error").textContent = "Wrong password";
     document.getElementById("gate-input").value = "";
@@ -367,11 +379,20 @@ function checkPassword() {
   }
 }
 
-// Auto-login if already authed this session
-if (sessionStorage.getItem("lbby-authed") === "1") {
-  document.getElementById("gate").style.display = "none";
-  document.getElementById("app").style.display = "block";
-}
+// Auto-login if auth token is valid and not expired
+(function checkExistingAuth() {
+  try {
+    const auth = JSON.parse(sessionStorage.getItem("lbby-authed"));
+    if (auth && auth.token && auth.expiry && Date.now() < auth.expiry) {
+      document.getElementById("gate").style.display = "none";
+      document.getElementById("app").style.display = "block";
+    } else {
+      sessionStorage.removeItem("lbby-authed");
+    }
+  } catch (e) {
+    sessionStorage.removeItem("lbby-authed");
+  }
+})();
 
 // Enter key on password field
 document.getElementById("gate-input").addEventListener("keydown", (e) => {
